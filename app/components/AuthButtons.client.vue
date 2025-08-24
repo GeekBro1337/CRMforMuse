@@ -4,14 +4,19 @@ const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 
 const signup = () =>
   loginWithRedirect({
-    authorizationParams: { screen_hint: "signup" }, // сразу открыть форму регистрации
+    authorizationParams: { screen_hint: "signup" },
+  });
+
+const doLogout = () =>
+  logout({
+    logoutParams: { returnTo: window.location.origin }, // <-- важно для v2
   });
 </script>
 
 <template>
   <div class="flex items-center gap-3">
     <span v-if="isAuthenticated" class="opacity-70"
-      >Привет, {{ user?.name }}</span
+      >Привет, {{ user?.email }}</span
     >
     <button
       v-if="!isAuthenticated"
@@ -27,13 +32,7 @@ const signup = () =>
     >
       Войти
     </button>
-    <button
-      v-else
-      class="px-3 py-1 rounded border"
-      @click="
-        () => logout({ logoutParams: { returnTo: window.location.origin } })
-      "
-    >
+    <button v-else class="px-3 py-1 rounded border" @click="doLogout">
       Выйти
     </button>
   </div>
