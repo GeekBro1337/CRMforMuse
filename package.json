@@ -7,15 +7,23 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && prisma generate",
     "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down -v",
+    "prisma:gen": "prisma generate",
+    "prisma:migrate": "prisma migrate dev -n init_auto",
+    "prisma:studio": "prisma studio",
+    "setup:win": "powershell -ExecutionPolicy Bypass -File ./scripts/setup.ps1",
+    "setup:unix": "bash ./scripts/setup.sh"
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.4.0",
     "@iconify-json/lucide": "^1.2.62",
     "@iconify-json/simple-icons": "^1.2.48",
     "@nuxt/ui": "^3.3.2",
+    "@prisma/client": "^6.14.0",
     "nuxt": "^4.0.3"
   },
   "devDependencies": {
