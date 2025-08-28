@@ -1,11 +1,9 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: musicclub-postgres
     restart: unless-stopped
-    env_file: .env.db
+    env_file: .env
     ports:
       - "${PGPORT:-5432}:5432"
     volumes:
@@ -16,15 +14,41 @@ services:
       timeout: 3s
       retries: 10
 
-  adminer: # опционально: веб-UI для БД
-    image: adminer:4
-    container_name: musicclub-adminer
+  directus:
+    image: directus/directus:latest
+    container_name: musicclub-directus
     restart: unless-stopped
+    env_file: .env
+    environment:
+      DIRECTUS_DATABASE_CLIENT: pg
+      DIRECTUS_DATABASE_HOST: postgres
+      DIRECTUS_DATABASE_PORT: 5432
+      DIRECTUS_DATABASE_DATABASE: ${POSTGRES_DB}
+      DIRECTUS_DATABASE_USER: ${POSTGRES_USER}
+      DIRECTUS_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DIRECTUS_FILES_LOCAL_STORAGE_PATH: /directus/uploads
     ports:
-      - "8080:8080"
+      - "${DIRECTUS_PORT:-8055}:8055"
+    volumes:
+      - directus_uploads:/directus/uploads
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
+
+  backup:
+    image: alpine:3.18
+    container_name: musicclub-backup
+    restart: "no"
+    env_file: .env
+    volumes:
+      - ./backups:/backups
+    entrypoint: ["/bin/sh","-c"]
+    command: >
+      apk add --no-cache postgresql-client bash && \
+      PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -F c -b -v -f /backups/pg_dump_$(date +'%Y%m%d_%H%M%S').dump
+    depends_on:
+      - postgres
 
 volumes:
   pg_data:
+  directus_uploads:
+

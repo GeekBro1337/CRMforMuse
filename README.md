@@ -6,7 +6,7 @@
 - **Auth0** — авторизация (ученики, админы, преподаватели)
 - **PostgreSQL** в Docker
 - **Prisma ORM**
-- **Adminer** (простая web-админка для БД)
+- **Directus** — headless CMS и файловое хранилище
 - **pnpm** — менеджер пакетов
 
 ---
@@ -37,35 +37,38 @@ Allowed Web Origins: http://localhost:3000
 
 Скопировать Domain и Client ID.
 
-Пример .env
+Пример `.env` находится в файле `.env.example`. После создания static token в
+Directus заполните переменную `DIRECTUS_TOKEN`.
 
-# Auth0
-
-AUTH0_DOMAIN=dev-xxxx.us.auth0.com
-AUTH0_CLIENT_ID=xxxxxxxxxxxxxxxxxxxx
-AUTH0_AUDIENCE=
-AUTH0_ISSUER=https://dev-xxxx.us.auth0.com/
-
-# Database
-
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/music_club_crm?schema=public"
-
-🐘 PostgreSQL в Docker
+🐘 PostgreSQL и Directus в Docker
 
 В корне есть docker-compose.yml, который поднимет:
 
-Postgres 16
-
-Adminer (http://localhost:8080
-)
+- Postgres 16
+- Directus (http://localhost:8055)
+- сервис `backup` для дампов БД в `./backups`
 
 Запуск:
 
-pnpm db:up
+```bash
+docker compose up -d
+```
 
 Остановка:
 
-pnpm db:down
+```bash
+docker compose down
+```
+
+Ручной бэкап:
+
+```bash
+docker compose run --rm backup
+```
+
+После запуска откройте `http://localhost:8055` и войдите с
+`DIRECTUS_ADMIN_EMAIL` / `DIRECTUS_ADMIN_PASSWORD`. Затем создайте static token
+(`Settings → Users → Tokens`) с именем `nuxt-service-token` и сохраните его в `.env` как `DIRECTUS_TOKEN`.
 
 🔧 Prisma ORM
 Инициализация
@@ -81,7 +84,7 @@ http://localhost:5555
 
 Мы подготовили скрипты (scripts/setup.ps1 и scripts/setup.sh), которые:
 
-Проверяют наличие .env и .env.db
+Проверяют наличие .env
 
 Устанавливают зависимости (pnpm install)
 
@@ -125,7 +128,7 @@ db.ts # singleton Prisma client
 prisma/
 schema.prisma # схема БД
 migrations/ # миграции
-docker-compose.yml # Postgres + Adminer
+docker-compose.yml # Postgres + Directus + backup
 
 ✅ Готово
 
@@ -136,4 +139,4 @@ docker-compose.yml # Postgres + Adminer
 
 форму записи на пробный урок (сохраняет в БД)
 
-возможность смотреть заявки через Prisma Studio или Adminer
+возможность смотреть заявки через Prisma Studio или Directus

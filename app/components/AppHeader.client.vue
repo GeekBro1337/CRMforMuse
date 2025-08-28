@@ -4,9 +4,7 @@ import { useAuthStore } from "~/stores/auth";
 
 const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
 const auth = useAuthStore();
-
-// синхронизируем роли/юзера в Pinia (на случай первого визита)
-if (process.client && user.value) auth.sync(user.value);
+// синхронизация роли и пользователя происходит через плагин `app/plugins/10.auth-sync.client.ts`
 
 const roleLabel = computed(() => {
   if (!auth.roles?.length) return "—";
@@ -61,16 +59,16 @@ function onLogout() {
 
           <button
             v-if="!isAuthenticated"
-            @click="onLogin"
             class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 transition"
+            @click="onLogin"
           >
             Войти
           </button>
 
           <button
             v-else
-            @click="onLogout"
             class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 transition"
+            @click="onLogout"
           >
             Выйти
           </button>

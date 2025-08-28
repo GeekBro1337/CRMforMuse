@@ -13,6 +13,8 @@ export default defineNuxtConfig({
     // серверные (не попадут в браузер)
     AUTH0_ISSUER: process.env.AUTH0_ISSUER,
     DATABASE_URL: process.env.DATABASE_URL,
+    DIRECTUS_URL: process.env.DIRECTUS_URL,
+    DIRECTUS_TOKEN: process.env.DIRECTUS_TOKEN,
 
     // публичные (доступны в браузере — нужны SDK Auth0)
     public: {

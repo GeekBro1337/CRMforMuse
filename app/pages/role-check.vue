@@ -5,7 +5,7 @@ const auth = useAuthStore();
 
 let isAuthenticated, user;
 
-if (process.client) {
+if (import.meta.client) {
   const auth0 = await import("@auth0/auth0-vue");
   const { useAuth0 } = auth0;
   const auth0Client = useAuth0();
